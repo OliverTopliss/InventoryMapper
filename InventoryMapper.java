@@ -3,7 +3,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JFrame;
-import InventoryMapper.ChooseFileWindow;
 
 public class InventoryMapper extends JFrame implements ActionListener
 {
@@ -22,7 +21,7 @@ public class InventoryMapper extends JFrame implements ActionListener
     fileChooserPanel.add(selectFileButton);
 
     contents.add(fileChooserPanel, BorderLayout.NORTH);
-
+    selectFileButton.addActionListener(this);
 
     pack();
   }// InventoryMapper Constructor
@@ -41,6 +40,12 @@ public class InventoryMapper extends JFrame implements ActionListener
       ChooseFileWindow selectFileWindow = new ChooseFileWindow();
 
 
+
     }
+  }
+
+  public JButton getSelectFileButton()
+  {
+    return selectFileButton;
   }
 }
