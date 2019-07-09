@@ -28,6 +28,8 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
 
     contents.setLayout(new BorderLayout());
 
+    //contents.add(new JScrollPane(mapImageLabel));
+
     //adds a panel in the ceter to hold the map
     contents.add(mapPanePanel, BorderLayout.CENTER);
 
@@ -64,15 +66,18 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
       try
       {
         //the image of the map is stored as an image icon and created from the file selected
-        mapImage = new ImageIcon(selectFileWindow.getFileLocation());
+        mapImage = scaleImageIcon(new ImageIcon(selectFileWindow.getFileLocation()));
+
         System.out.println(selectFileWindow.getFileLocation());
         //the image icon is added to the label
         mapImageLabel.setIcon(mapImage);
 
         //the bounds of the layered pane are set which must be done for the layered pane to work correctly
         mapPane.setBounds(0, 0, mapImage.getIconWidth(), mapImage.getIconHeight());
+        
         //the layered pane is added to the GUI in another panel
         mapPanePanel.add(mapPane);
+
         //the map image is added to the bottom most layer of the the layered panel
         mapPane.add(mapImageLabel, JLayeredPane.DEFAULT_LAYER);
 
@@ -80,6 +85,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
 
         //the image of the map has a mouse listener associated with it
         mapImageLabel.addMouseListener(this);
+
         pack();
       }//try
       //if an Illegal argument exception is made (ie adding another image as the map) then the old one is removed and the new one is added
@@ -88,7 +94,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
         System.out.println("error caught");
         mapPanePanel.remove(mapPane);
 
-        mapImage = new ImageIcon(selectFileWindow.getFileLocation());
+        mapImage = scaleImageIcon(new ImageIcon(selectFileWindow.getFileLocation()));
 
         //the image icon is added to the label
         mapImageLabel.setIcon(mapImage);
@@ -96,7 +102,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
         mapPanePanel.add(mapPane);
         mapPane.setBounds(0, 0, mapImage.getIconWidth(), mapImage.getIconHeight());
         mapPane.add(mapImageLabel, JLayeredPane.DEFAULT_LAYER);
-      }
+      }//catch
 
     }// if
   }// actionPerformed
@@ -112,7 +118,9 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
 
     //the dot image is added to the GUI at the coordinates of the click
     mapPane.add(dot, JLayeredPane.DEFAULT_LAYER + 1, 0);
-    pack();
+    InputDetailsWindow inputDetailsWindow = new InputDetailsWindow();
+    inputDetailsWindow.setVisible(true);
+
   }// mouseClicked
 
   //methods don't currently do anything
@@ -135,6 +143,16 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
   public void mouseReleased(MouseEvent event)
   {
   }// mouseReleased
+
+
+  //method that is called which will scale the selected image icon to a specific size.
+  private ImageIcon scaleImageIcon(ImageIcon imageIconToScale)
+  {
+    Image imageForScaling = imageIconToScale.getImage();
+    Image scaledImage = imageForScaling.getScaledInstance(800, 900, Image.SCALE_DEFAULT);
+    System.out.println("scaled");
+    return new ImageIcon(scaledImage);
+  }//scaleImageIcon
 
 
   //used to get a reference to the button to select a file
