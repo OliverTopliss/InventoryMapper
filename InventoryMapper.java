@@ -61,24 +61,43 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     {
       //creates a new window for choosing a file to load
       ChooseFileWindow selectFileWindow = new ChooseFileWindow();
+      try
+      {
+        //the image of the map is stored as an image icon and created from the file selected
+        mapImage = new ImageIcon(selectFileWindow.getFileLocation());
+        System.out.println(selectFileWindow.getFileLocation());
+        //the image icon is added to the label
+        mapImageLabel.setIcon(mapImage);
 
-      //the image of the map is stored as an image icon and created from the file selected
-      mapImage = new ImageIcon(selectFileWindow.getFileLocation());
-      //the image icon is added to the label
-      mapImageLabel.setIcon(mapImage);
+        //the bounds of the layered pane are set which must be done for the layered pane to work correctly
+        mapPane.setBounds(0, 0, mapImage.getIconWidth(), mapImage.getIconHeight());
+        //the layered pane is added to the GUI in another panel
+        mapPanePanel.add(mapPane);
+        //the map image is added to the bottom most layer of the the layered panel
+        mapPane.add(mapImageLabel, JLayeredPane.DEFAULT_LAYER);
 
-      //the bounds of the layered pane are set which must be done for the layered pane to work correctly
-      mapPane.setBounds(0,0, mapImage.getIconWidth(),mapImage.getIconHeight());
-      //the layered pane is added to the GUI in another panel
-      mapPanePanel.add(mapPane);
-      //the map image is added to the bottom most layer of the the layered panel
-      mapPane.add(mapImageLabel,JLayeredPane.DEFAULT_LAYER);
+        mapImageLabel.setBounds(0, 0, mapImage.getIconWidth(), mapImage.getIconHeight());
 
-      mapImageLabel.setBounds(0,0, mapImage.getIconWidth(), mapImage.getIconHeight());
+        //the image of the map has a mouse listener associated with it
+        mapImageLabel.addMouseListener(this);
+        pack();
+      }//try
+      //if an Illegal argument exception is made (ie adding another image as the map) then the old one is removed and the new one is added
+      catch (IllegalArgumentException illegalArgumentException)
+      {
+        System.out.println("error caught");
+        mapPanePanel.remove(mapPane);
 
-      //the image of the map has a mouse listener associated with it
-      mapImageLabel.addMouseListener(this);
-      pack();
+        mapImage = new ImageIcon(selectFileWindow.getFileLocation());
+
+        //the image icon is added to the label
+        mapImageLabel.setIcon(mapImage);
+
+        mapPanePanel.add(mapPane);
+        mapPane.setBounds(0, 0, mapImage.getIconWidth(), mapImage.getIconHeight());
+        mapPane.add(mapImageLabel, JLayeredPane.DEFAULT_LAYER);
+      }
+
     }// if
   }// actionPerformed
 
