@@ -22,7 +22,7 @@ public class ChooseFileWindow extends JFrame implements ActionListener
     contents.add(fileChooser);
 
     //filter is applied for png and jpeg images so only these files are displayed by default
-    FileNameExtensionFilter fileFilter = new FileNameExtensionFilter("JPEG images and png images", "png", "JPEG");
+    FileNameExtensionFilter fileFilter = new FileNameExtensionFilter("JPEG images and png images", "png", "JPEG", "jpg");
     fileChooser.setFileFilter(fileFilter);
 
     //filter to search for all file types is disabled
@@ -37,7 +37,7 @@ public class ChooseFileWindow extends JFrame implements ActionListener
       System.out.println("yes");
       File selectedFile = fileChooser.getSelectedFile();
 
-      fileLocation = fileChooser.getName(selectedFile);
+      fileLocation = selectedFile.getPath();
     }//if
     //otherwise if the cancel button is pressed then do...
     else if(buttonPressed == fileChooser.CANCEL_OPTION)
