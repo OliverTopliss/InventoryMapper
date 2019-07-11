@@ -44,6 +44,7 @@ public class InputDetailsWindow extends JFrame implements ActionListener
       //x and y coordinates are assigned to the xCoordinate and yCorrdinate varaibles when the point is first placed (clicked)
       MapPoint mapPoint = new MapPoint(xCoordinate, yCoordinate, name, details);
       setOfMapPoints.add(mapPoint);
+      dispose();
     }// if
   }//actionPerformed
 
