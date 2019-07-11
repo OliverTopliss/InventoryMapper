@@ -74,7 +74,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
 
         //the bounds of the layered pane are set which must be done for the layered pane to work correctly
         mapPane.setBounds(0, 0, mapImage.getIconWidth(), mapImage.getIconHeight());
-        
+
         //the layered pane is added to the GUI in another panel
         mapPanePanel.add(mapPane);
 
