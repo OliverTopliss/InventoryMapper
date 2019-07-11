@@ -18,7 +18,8 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
   private JPanel mapPanePanel = new JPanel();
   private JPanel displayDataPanel = new JPanel();
   private JLabel nameLabel = new JLabel("Name: ");
-  private JLabel detailsLabel = new JLabel("Details: ");
+  private JLabel locationLabel = new JLabel("location: ");
+  private JLabel typeLabel = new JLabel("Type of Device: ");
   private JLayeredPane mapPane = new JLayeredPane();
   private JButton selectFileButton = new JButton("Select File");
   private ImageIcon mapImage = null;
@@ -44,7 +45,8 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     mapPanePanel.setLayout(null);
     displayDataPanel.setLayout(new GridLayout(0,1));
     displayDataPanel.add(nameLabel);
-    displayDataPanel.add(detailsLabel);
+    displayDataPanel.add(locationLabel);
+    displayDataPanel.add(typeLabel);
 
     //the button to open the map image file is stored in a flow layout
     fileChooserPanel.setLayout(new FlowLayout());
@@ -156,7 +158,8 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
         if (inXRange && inYRange)
         {
           nameLabel.setText("Name: " + mapPointToCheck.getName());
-          detailsLabel.setText("Details: " + mapPointToCheck.getDetails());
+          locationLabel.setText("Location: " + mapPointToCheck.getLocation());
+          typeLabel.setText("Type of Device: " + mapPointToCheck.getTypeOfDevice());
           pack();
           break;
         }// if
