@@ -10,10 +10,12 @@ public class InputDetailsWindow extends JFrame implements ActionListener
 {
   private Container contents = getContentPane();
   private JTextField nameInputField = new JTextField();
-  private JTextField detailsInputField = new JTextField();
+  private JTextField locationInputField = new JTextField();
+  private JTextField typeInputField = new JTextField();
   private JButton confirmDetailsButton = new JButton("Confirm Details");
   private String name = "";
-  private String details = "";
+  private String location = "";
+  private String typeOfDevice = "";
   private int xCoordinate = 0;
   private int yCoordinate = 0;
   private static Set<MapPoint> setOfMapPoints = new TreeSet<MapPoint>();
@@ -24,8 +26,10 @@ public class InputDetailsWindow extends JFrame implements ActionListener
     contents.setLayout(new GridLayout(0,2));
     contents.add(new JLabel("Name: "));
     contents.add(nameInputField);
-    contents.add(new JLabel("Details"));
-    contents.add(detailsInputField);
+    contents.add(new JLabel("Location: "));
+    contents.add(locationInputField);
+    contents.add(new JLabel("Type of Device: "));
+    contents.add(typeInputField);
     contents.add(confirmDetailsButton);
     confirmDetailsButton.addActionListener(this);
     setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -39,10 +43,11 @@ public class InputDetailsWindow extends JFrame implements ActionListener
     if(event.getSource() == confirmDetailsButton)
     {
       name = nameInputField.getText();
-      details = detailsInputField.getText();
+      location = locationInputField.getText();
+      typeOfDevice = typeInputField.getText();
       //creates a new map point when the data is submitted
       //x and y coordinates are assigned to the xCoordinate and yCorrdinate varaibles when the point is first placed (clicked)
-      MapPoint mapPoint = new MapPoint(xCoordinate, yCoordinate, name, details);
+      MapPoint mapPoint = new MapPoint(xCoordinate, yCoordinate, name, location, typeOfDevice);
       setOfMapPoints.add(mapPoint);
       dispose();
     }// if
