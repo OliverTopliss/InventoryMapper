@@ -1,3 +1,4 @@
+import javax.sound.midi.SysexMessage;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -6,6 +7,8 @@ import javax.swing.JFrame;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
+import java.util.Iterator;
+import java.util.Set;
 
 //program that is used for mapping the location of devices when completing an inventory
 public class InventoryMapper extends JFrame implements ActionListener, MouseListener
@@ -18,6 +21,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
   private ImageIcon mapImage = null;
   private JLabel mapImageLabel = new JLabel();
   private Container contents = getContentPane();
+  private Iterator<MapPoint> iterator = null;
 
   //constructor method
   public InventoryMapper()
@@ -44,6 +48,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     contents.add(fileChooserPanel, BorderLayout.NORTH);
     //the button has an action listener associated with it
     selectFileButton.addActionListener(this);
+    setDefaultCloseOperation(EXIT_ON_CLOSE);
 
     pack();
   }// InventoryMapper Constructor
@@ -91,17 +96,19 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
       //if an Illegal argument exception is made (ie adding another image as the map) then the old one is removed and the new one is added
       catch (IllegalArgumentException illegalArgumentException)
       {
-        System.out.println("error caught");
+        System.out.println("error caught: " + illegalArgumentException);
         mapPanePanel.remove(mapPane);
+        mapPane.remove(JLayeredPane.DEFAULT_LAYER);
 
         mapImage = scaleImageIcon(new ImageIcon(selectFileWindow.getFileLocation()));
-
         //the image icon is added to the label
         mapImageLabel.setIcon(mapImage);
 
-        mapPanePanel.add(mapPane);
+
         mapPane.setBounds(0, 0, mapImage.getIconWidth(), mapImage.getIconHeight());
         mapPane.add(mapImageLabel, JLayeredPane.DEFAULT_LAYER);
+        mapPanePanel.add(mapPane);
+        pack();
       }//catch
 
     }// if
@@ -121,6 +128,29 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     InputDetailsWindow inputDetailsWindow = new InputDetailsWindow();
     inputDetailsWindow.setVisible(true);
 
+    //gets the setOfMapPoints from the InputDetailsWindow
+    Set<MapPoint> setOfMapPoints = InputDetailsWindow.getSetOfMapPoints();
+
+    //creates an interator to go thorugh the set of MapPoints
+    iterator = setOfMapPoints.iterator();
+
+    //iterates through the set and checks if the point being placed is too close to another point
+    //if it is too close then there is a clash and the already created MapPoint should be output
+    while(iterator.hasNext())
+    {
+      MapPoint mapPointToCheck = iterator.next();
+      System.out.println("Event: " + event.getX() + " " + event.getY());
+      System.out.println(mapPointToCheck);
+      boolean inXRange = mapPointToCheck.getXCoordinate() >= event.getX() - 10 && mapPointToCheck.getXCoordinate() <= event.getX() + 10;
+      boolean inYRange = mapPointToCheck.getYCoordinate() >= event.getY() - 10 && mapPointToCheck.getYCoordinate() <= event.getY() + 10;
+      if(inXRange && inYRange)
+      {
+        System.out.println(mapPointToCheck + " - Collision");
+      }// if
+    }// while
+
+    //sets the coordinates
+    inputDetailsWindow.setCoordinates(event.getX(), event.getY());
   }// mouseClicked
 
   //methods don't currently do anything
