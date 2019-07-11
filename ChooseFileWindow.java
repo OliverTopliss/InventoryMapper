@@ -11,6 +11,7 @@ public class ChooseFileWindow extends JFrame implements ActionListener
 {
   //default chosen file is nothing
   private String fileLocation = "";
+  private boolean cancelledFileChoice = false;
 
   //choosefilewindow constrcutor
   public ChooseFileWindow()
@@ -42,8 +43,9 @@ public class ChooseFileWindow extends JFrame implements ActionListener
     //otherwise if the cancel button is pressed then do...
     else if(buttonPressed == fileChooser.CANCEL_OPTION)
     {
+      //sets a flag if the cancel button is pressed
       System.out.println("cancel");
-      File selectedFile = new File("");
+      cancelledFileChoice = true;
     }//elseIf
 
     setVisible(true);
@@ -64,5 +66,9 @@ public class ChooseFileWindow extends JFrame implements ActionListener
   {
     return fileLocation;
   }// getFileLocation
+  public boolean getCancelledFileChoice()
+  {
+    return cancelledFileChoice;
+  }
 
 }//ChooseFileWindow class
