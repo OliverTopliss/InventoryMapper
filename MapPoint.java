@@ -51,4 +51,14 @@ public class MapPoint implements Comparable<MapPoint>
   {
     return yCoordinate;
   }//getYCoordinate
+
+  public String getName()
+  {
+    return name;
+  }//getName
+
+  public String getDetails()
+  {
+    return details;
+  }//getDetails
 }//MapPoint class
