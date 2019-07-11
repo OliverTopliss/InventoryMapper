@@ -78,36 +78,38 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
       ChooseFileWindow selectFileWindow = new ChooseFileWindow();
       try
       {
-        //the image of the map is stored as an image icon and created from the file selected
-        mapImage = scaleImageIcon(new ImageIcon(selectFileWindow.getFileLocation()));
+        //only do this if the cancel button is not pressed
+        if(!selectFileWindow.getCancelledFileChoice())
+        {
+          //the image of the map is stored as an image icon and created from the file selected
+          mapImage = scaleImageIcon(new ImageIcon(selectFileWindow.getFileLocation()));
 
-        System.out.println(selectFileWindow.getFileLocation());
-        //the image icon is added to the label
-        mapImageLabel.setIcon(mapImage);
+          System.out.println(selectFileWindow.getFileLocation());
+          //the image icon is added to the label
+          mapImageLabel.setIcon(mapImage);
 
-        //the bounds of the layered pane are set which must be done for the layered pane to work correctly
-        mapPane.setBounds(0, 0, mapImage.getIconWidth(), mapImage.getIconHeight());
+          //the bounds of the layered pane are set which must be done for the layered pane to work correctly
+          mapPane.setBounds(0, 0, mapImage.getIconWidth(), mapImage.getIconHeight());
 
-        //the layered pane is added to the GUI in another panel
-        mapPanePanel.add(mapPane);
+          //the layered pane is added to the GUI in another panel
+          mapPanePanel.add(mapPane);
 
-        //the map image is added to the bottom most layer of the the layered panel
-        mapPane.add(mapImageLabel, JLayeredPane.DEFAULT_LAYER);
+          //the map image is added to the bottom most layer of the the layered panel
+          mapPane.add(mapImageLabel, JLayeredPane.DEFAULT_LAYER);
 
-        mapImageLabel.setBounds(0, 0, mapImage.getIconWidth(), mapImage.getIconHeight());
-        setPreferredSize(new Dimension(mapImage.getIconWidth(), mapImage.getIconHeight()));
+          mapImageLabel.setBounds(0, 0, mapImage.getIconWidth(), mapImage.getIconHeight());
+          setPreferredSize(new Dimension(mapImage.getIconWidth(), mapImage.getIconHeight()));
 
-        //the image of the map has a mouse listener associated with it
-        mapImageLabel.addMouseListener(this);
+          //the image of the map has a mouse listener associated with it
+          mapImageLabel.addMouseListener(this);
 
-        pack();
+          pack();
+        }
       }//try
       //if an Illegal argument exception is made (ie adding another image as the map) then the old one is removed and the new one is added
       catch (IllegalArgumentException illegalArgumentException)
       {
-        System.out.println("error caught: " + illegalArgumentException);
-        mapPanePanel.remove(mapPane);
-        mapPane.remove(JLayeredPane.DEFAULT_LAYER);
+        System.err.println("error caught: " + illegalArgumentException + " | " + illegalArgumentException.getCause());
 
         mapImage = scaleImageIcon(new ImageIcon(selectFileWindow.getFileLocation()));
         //the image icon is added to the label
