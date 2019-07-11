@@ -43,9 +43,11 @@ public class ChooseFileWindow extends JFrame implements ActionListener
     else if(buttonPressed == fileChooser.CANCEL_OPTION)
     {
       System.out.println("cancel");
+      File selectedFile = new File("");
     }//elseIf
 
     setVisible(true);
+    setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     pack();
   }//ChooseFileWindow constructor
 
