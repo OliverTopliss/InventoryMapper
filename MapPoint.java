@@ -4,15 +4,17 @@ public class MapPoint implements Comparable<MapPoint>
   private int xCoordinate = 0;
   private int yCoordinate = 0;
   private String name = "";
-  private String details = "";
+  private String location = "";
+  private String typeOfDevice = "";
 
 
-  public MapPoint(int xCoordinate, int yCoordinate, String name, String details)
+  public MapPoint(int xCoordinate, int yCoordinate, String name, String location, String typeOfDevice)
   {
     this.xCoordinate = xCoordinate;
     this.yCoordinate = yCoordinate;
     this.name = name;
-    this.details = details;
+    this.location = location;
+    this.typeOfDevice = typeOfDevice;
   }//MapPoint
 
   @Override
@@ -37,7 +39,7 @@ public class MapPoint implements Comparable<MapPoint>
   @Override
   public String toString()
   {
-    return xCoordinate + ", " + yCoordinate + ", " + name + ", " + details;
+    return xCoordinate + ", " + yCoordinate + ", " + name + ", " + location + " " + typeOfDevice;
   }//toString
 
   //accessor method for the X Coordinate
@@ -57,8 +59,13 @@ public class MapPoint implements Comparable<MapPoint>
     return name;
   }//getName
 
-  public String getDetails()
+  public String getLocation()
   {
-    return details;
+    return location;
   }//getDetails
+
+  public String getTypeOfDevice()
+  {
+    return typeOfDevice;
+  }//getTypeOfDevice
 }//MapPoint class
