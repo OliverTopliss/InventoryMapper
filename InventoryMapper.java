@@ -124,41 +124,50 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
   @Override
   public void mouseClicked(MouseEvent event)
   {
-    //when the mouse is clicked on the image of the map, a new image is created and added to a label
-    ImageIcon dotImage = new ImageIcon("./dot.png");
 
-    JLabel dot = new JLabel(dotImage);
-    dot.setBounds(event.getX(), event.getY(), 10, 10);
-
-    //the dot image is added to the GUI at the coordinates of the click
-    mapPane.add(dot, JLayeredPane.DEFAULT_LAYER + 1, 0);
     InputDetailsWindow inputDetailsWindow = new InputDetailsWindow();
-    inputDetailsWindow.setVisible(true);
-
     //gets the setOfMapPoints from the InputDetailsWindow
     Set<MapPoint> setOfMapPoints = InputDetailsWindow.getSetOfMapPoints();
 
-    //creates an interator to go thorugh the set of MapPoints
-    iterator = setOfMapPoints.iterator();
-
-    //iterates through the set and checks if the point being placed is too close to another point
-    //if it is too close then there is a clash and the already created MapPoint should be output
-    while(iterator.hasNext())
+    //checks if the point being placed is the first point to place
+    //if it is then it is marked on the map
+    if(setOfMapPoints.isEmpty())
     {
-      MapPoint mapPointToCheck = iterator.next();
-      System.out.println("Event: " + event.getX() + " " + event.getY());
-      System.out.println(mapPointToCheck);
-      boolean inXRange = mapPointToCheck.getXCoordinate() >= event.getX() - 10 && mapPointToCheck.getXCoordinate() <= event.getX() + 10;
-      boolean inYRange = mapPointToCheck.getYCoordinate() >= event.getY() - 10 && mapPointToCheck.getYCoordinate() <= event.getY() + 10;
+      placeMapPoint(event.getX(), event.getY());
+      inputDetailsWindow.setVisible(true);
+    }
+    //if it is not the first, then it looks for another close point
+    else
+    {
+      //creates an interator to go thorugh the set of MapPoints
+      iterator = setOfMapPoints.iterator();
 
-      if(inXRange && inYRange)
+      //iterates through the set and checks if the point being placed is too close to another point
+      //if it is too close then there is a clash and the already created MapPoint should be output
+      while (iterator.hasNext())
       {
-        nameLabel.setText("Name: " + mapPointToCheck.getName());
-        detailsLabel.setText("Details: " + mapPointToCheck.getDetails());
-        pack();
-      }// if
-    }// while
+        MapPoint mapPointToCheck = iterator.next();
+        System.out.println("Event: " + event.getX() + " " + event.getY());
+        System.out.println(mapPointToCheck);
+        boolean inXRange = mapPointToCheck.getXCoordinate() >= event.getX() - 10 && mapPointToCheck.getXCoordinate() <= event.getX() + 10;
+        boolean inYRange = mapPointToCheck.getYCoordinate() >= event.getY() - 10 && mapPointToCheck.getYCoordinate() <= event.getY() + 10;
 
+        //if a close point is found then its details are output and the loop is exited
+        if (inXRange && inYRange)
+        {
+          nameLabel.setText("Name: " + mapPointToCheck.getName());
+          detailsLabel.setText("Details: " + mapPointToCheck.getDetails());
+          pack();
+          break;
+        }// if
+        //otherwise if the end of the set of close points is reached then the point is placed anyway because a close point hasn't been found
+        else if (!iterator.hasNext())
+        {
+          placeMapPoint(event.getX(), event.getY());
+          inputDetailsWindow.setVisible(true);
+        }//else if
+      }// while
+    }//else
     //sets the coordinates
     inputDetailsWindow.setCoordinates(event.getX(), event.getY());
   }// mouseClicked
@@ -193,6 +202,19 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     System.out.println("scaled");
     return new ImageIcon(scaledImage);
   }//scaleImageIcon
+
+  //helper method which places a point on the map at the specific coordinates
+  private void placeMapPoint(int xCoordinate, int yCoordinate)
+  {
+    //when the mouse is clicked on the image of the map, a new image is created and added to a label
+    ImageIcon dotImage = new ImageIcon("./dot.png");
+
+    JLabel dot = new JLabel(dotImage);
+    dot.setBounds(xCoordinate, yCoordinate, 10, 10);
+
+    //the dot image is added to the GUI at the coordinates of the click
+    mapPane.add(dot, JLayeredPane.DEFAULT_LAYER + 1, 0);
+  }//placeMapPoint
 
 
   //used to get a reference to the button to select a file
