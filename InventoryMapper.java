@@ -93,6 +93,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
         mapPane.add(mapImageLabel, JLayeredPane.DEFAULT_LAYER);
 
         mapImageLabel.setBounds(0, 0, mapImage.getIconWidth(), mapImage.getIconHeight());
+        setPreferredSize(new Dimension(mapImage.getIconWidth(), mapImage.getIconHeight()));
 
         //the image of the map has a mouse listener associated with it
         mapImageLabel.addMouseListener(this);
@@ -149,6 +150,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
       System.out.println(mapPointToCheck);
       boolean inXRange = mapPointToCheck.getXCoordinate() >= event.getX() - 10 && mapPointToCheck.getXCoordinate() <= event.getX() + 10;
       boolean inYRange = mapPointToCheck.getYCoordinate() >= event.getY() - 10 && mapPointToCheck.getYCoordinate() <= event.getY() + 10;
+
       if(inXRange && inYRange)
       {
         nameLabel.setText("Name: " + mapPointToCheck.getName());
