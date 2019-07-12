@@ -140,7 +140,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
         //try writing data to the file
         try
         {
-          FileWriter characterToFileWriter = new FileWriter((new File("./testFile.txt")));
+          FileWriter characterToFileWriter = new FileWriter((new File("./testFile.imp")));
 
           PrintWriter lineToFileWriter = new PrintWriter(characterToFileWriter);
 
