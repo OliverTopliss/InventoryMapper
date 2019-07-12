@@ -1,4 +1,3 @@
-import javax.sound.midi.SysexMessage;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -7,8 +6,11 @@ import javax.swing.JFrame;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 
 //program that is used for mapping the location of devices when completing an inventory
 public class InventoryMapper extends JFrame implements ActionListener, MouseListener
@@ -22,10 +24,13 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
   private JLabel typeLabel = new JLabel("Type of Device: ");
   private JLayeredPane mapPane = new JLayeredPane();
   private JButton selectFileButton = new JButton("Select File");
+  private JButton saveButton = new JButton("Save");
   private ImageIcon mapImage = null;
   private JLabel mapImageLabel = new JLabel();
   private Container contents = getContentPane();
   private Iterator<MapPoint> iterator = null;
+
+  private boolean firstSave = true;
 
   //constructor method
   public InventoryMapper()
@@ -52,10 +57,12 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     fileChooserPanel.setLayout(new FlowLayout());
 
     fileChooserPanel.add(selectFileButton);
+    fileChooserPanel.add(saveButton);
 
     contents.add(fileChooserPanel, BorderLayout.NORTH);
     //the button has an action listener associated with it
     selectFileButton.addActionListener(this);
+    saveButton.addActionListener(this);
     setDefaultCloseOperation(EXIT_ON_CLOSE);
 
     pack();
@@ -123,6 +130,39 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
       }//catch
 
     }// if
+
+    //if the save button is pressed
+    else if(event.getSource() == saveButton)
+    {
+      //if it is the first save that has been made then a new file should be created
+      if(firstSave)
+      {
+        //try writing data to the file
+        try
+        {
+          FileWriter characterToFileWriter = new FileWriter((new File("./testFile.txt")));
+
+          PrintWriter lineToFileWriter = new PrintWriter(characterToFileWriter);
+
+          //gets the line seperator for the current running system.
+          String lineSeperator = System.getProperty("line.separator");
+
+          characterToFileWriter.write("1" + lineSeperator);
+          characterToFileWriter.write("2" + lineSeperator);
+          lineToFileWriter.write("Name" + lineSeperator);
+          lineToFileWriter.write("Location" + lineSeperator);
+          lineToFileWriter.write("Type" + lineSeperator);
+          characterToFileWriter.close();
+          lineToFileWriter.close();
+          //it is not longer the first save
+          firstSave = false;
+        }//try
+        catch(Exception exception)
+        {
+          System.out.println("Error: " + exception.getCause());
+        }//catch
+      }//if
+    }//else if
   }// actionPerformed
 
   @Override

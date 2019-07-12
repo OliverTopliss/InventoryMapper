@@ -47,7 +47,6 @@ public class ChooseFileWindow extends JFrame implements ActionListener
       System.out.println("cancel");
       cancelledFileChoice = true;
     }//elseIf
-
     setVisible(true);
     setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     pack();
