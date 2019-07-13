@@ -66,5 +66,5 @@ public class InputDetailsWindow extends JFrame implements ActionListener
   {
     return setOfMapPoints;
   }//getSetOfMapPoints
-
+  
 }//InputDetailsClass
