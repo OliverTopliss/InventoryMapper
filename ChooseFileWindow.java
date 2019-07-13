@@ -5,6 +5,7 @@ import javax.swing.JFrame;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
+import java.io.FileFilter;
 
 //class that is used to model the GUI for choosing a map file to open
 public class ChooseFileWindow extends JFrame implements ActionListener
@@ -14,7 +15,7 @@ public class ChooseFileWindow extends JFrame implements ActionListener
   private boolean cancelledFileChoice = false;
 
   //choosefilewindow constrcutor
-  public ChooseFileWindow()
+  public ChooseFileWindow(FileNameExtensionFilter fileFilter)
   {
     setTitle("Choose File");
     Container contents = getContentPane();
@@ -23,7 +24,7 @@ public class ChooseFileWindow extends JFrame implements ActionListener
     contents.add(fileChooser);
 
     //filter is applied for png and jpeg images so only these files are displayed by default
-    FileNameExtensionFilter fileFilter = new FileNameExtensionFilter("JPEG images and png images", "png", "JPEG", "jpg");
+
     fileChooser.setFileFilter(fileFilter);
 
     //filter to search for all file types is disabled
