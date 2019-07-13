@@ -38,6 +38,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
   private Iterator<MapPoint> iterator = null;
   private String currentInventoryMapFileBeingEdited = "";
 
+  //used for reading and writing to the file
   private PrintWriter lineToFileWriter = null;
   private FileWriter characterToFileWriter = null;
   private BufferedReader lineFromFileReader = null;
@@ -101,7 +102,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
       ChooseFileWindow selectFileWindow = new ChooseFileWindow(new FileNameExtensionFilter("JPEG images and png images", "png", "JPEG", "jpg"));
       try
       {
-        //only do this if the cancel button is not pressed
+        //only do this if the cancel button is not pressed on the fileChooserForm
         if(!selectFileWindow.getCancelledFileChoice())
         {
           //the image of the map is stored as an image icon and created from the file selected
@@ -160,12 +161,24 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
         {
           characterToFileWriter = new FileWriter((new File(currentInventoryMapFileBeingEdited)));
           lineToFileWriter = new PrintWriter(characterToFileWriter);
+          //store the location of the image that was used for the map so that it can be loaded later for another .imp file
           lineToFileWriter.write(mapFileLocation);
-        }
+        }//try
         catch(Exception exception)
         {
           System.out.println("Error: " + exception + " " +  exception.getCause());
-        }
+        }//catch
+        finally
+        {
+          try
+          {
+            lineToFileWriter.close()
+          }//try
+          catch(Exception exception)
+          {
+            System.out.println("Error: " + exception + " " +  exception.getCause());
+          }//catch
+        }//finally
 
       }//if
 
@@ -215,30 +228,42 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
       }//finally
     }//else if
 
+    //if the load button is pressed
     else if(event.getSource() == loadFileButton)
     {
       try
       {
+        //clears the mapPane
         mapPane.removeAll();
+        //Creates a new JFrame for choosing a .imp file to load
         ChooseFileWindow loadFile = new ChooseFileWindow(new FileNameExtensionFilter("Inventory Mapper Files", "imp"));
         loadFile.setVisible(true);
+        //gets the file to load from the JFrame
         String fileToReadLocation = loadFile.getFileLocation();
         lineFromFileReader = new BufferedReader(new FileReader(fileToReadLocation));
+        //read the map file location fromt he file that is loaded
         mapFileLocation = lineFromFileReader.readLine();
+        setOfMapPoints = new TreeSet<MapPoint>();
         String xCoordinateReadAsString = "";
+
+        //while there are still records in the file to read
+        //reads the file and also executes th condition simultaneously
+
         while((xCoordinateReadAsString = lineFromFileReader.readLine()) != null)
         {
+          //gets the data from the file
           int xCoordinateRead = Integer.parseInt(xCoordinateReadAsString);
           int yCoordinateRead = Integer.parseInt(lineFromFileReader.readLine());
           String name = lineFromFileReader.readLine();
           String location = lineFromFileReader.readLine();
           String type = lineFromFileReader.readLine();
-          setOfMapPoints = new TreeSet<MapPoint>();
+          //adds the new map point to the tree set
 
           setOfMapPoints.add(new MapPoint(xCoordinateRead, yCoordinateRead, name, location, type));
           placeMapPoint(xCoordinateRead, yCoordinateRead);
-        }
-        System.out.println(mapFileLocation);
+        }//while
+
+        //loads the new image from the address that was stored in the file
         mapImage = scaleImageIcon(new ImageIcon(mapFileLocation));
         //the image icon is added to the label
         mapImageLabel.setIcon(mapImage);
@@ -246,15 +271,24 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
         mapPane.add(mapImageLabel, JLayeredPane.DEFAULT_LAYER);
         mapPanePanel.add(mapPane);
         pack();
-
-        lineFromFileReader.close();
-      }
+      }//try
       catch(Exception exception)
       {
         System.out.println("Error: " + exception + " " +  exception.getCause());
-      }
-    }
-  }// actionPerformed
+      }//catch
+      finally
+      {
+        try
+        {
+          lineFromFileReader.close();
+        }//try
+        catch(Exception exception)
+        {
+          System.out.println("Error: " + exception + " " +  exception.getCause());
+        }//catch
+      }//finally
+    }//else if
+  }//actionPerformed
 
   @Override
   public void mouseClicked(MouseEvent event)
