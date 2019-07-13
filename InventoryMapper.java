@@ -3,14 +3,14 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JFrame;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.rmi.MarshalledObject;
 import java.util.Iterator;
 import java.util.Set;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.util.TreeSet;
 
 //program that is used for mapping the location of devices when completing an inventory
 public class InventoryMapper extends JFrame implements ActionListener, MouseListener
@@ -19,23 +19,37 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
   private JPanel fileChooserPanel = new JPanel();
   private JPanel mapPanePanel = new JPanel();
   private JPanel displayDataPanel = new JPanel();
+
   private JLabel nameLabel = new JLabel("Name: ");
   private JLabel locationLabel = new JLabel("location: ");
   private JLabel typeLabel = new JLabel("Type of Device: ");
+  private JLabel mapImageLabel = new JLabel();
+
   private JLayeredPane mapPane = new JLayeredPane();
+
   private JButton selectFileButton = new JButton("Select File");
   private JButton saveButton = new JButton("Save");
+  private JButton loadFileButton = new JButton("Load");
+
   private ImageIcon mapImage = null;
-  private JLabel mapImageLabel = new JLabel();
+  private String mapFileLocation = "";
+
   private Container contents = getContentPane();
   private Iterator<MapPoint> iterator = null;
+  private String currentInventoryMapFileBeingEdited = "";
+
+  private PrintWriter lineToFileWriter = null;
+  private FileWriter characterToFileWriter = null;
+  private BufferedReader lineFromFileReader = null;
+  private FileReader characterFromFileReader = null;
+
+  private Set<MapPoint> setOfMapPoints = new TreeSet<MapPoint>();
 
   private boolean firstSave = true;
 
   //constructor method
   public InventoryMapper()
   {
-
     //gives the GUI a title, layout and adds components to it
     setTitle("Inventory Mapper");
 
@@ -58,11 +72,13 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
 
     fileChooserPanel.add(selectFileButton);
     fileChooserPanel.add(saveButton);
+    fileChooserPanel.add(loadFileButton);
 
     contents.add(fileChooserPanel, BorderLayout.NORTH);
     //the button has an action listener associated with it
     selectFileButton.addActionListener(this);
     saveButton.addActionListener(this);
+    loadFileButton.addActionListener(this);
     setDefaultCloseOperation(EXIT_ON_CLOSE);
 
     pack();
@@ -82,16 +98,17 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     if (event.getSource() == selectFileButton)
     {
       //creates a new window for choosing a file to load
-      ChooseFileWindow selectFileWindow = new ChooseFileWindow();
+      ChooseFileWindow selectFileWindow = new ChooseFileWindow(new FileNameExtensionFilter("JPEG images and png images", "png", "JPEG", "jpg"));
       try
       {
         //only do this if the cancel button is not pressed
         if(!selectFileWindow.getCancelledFileChoice())
         {
           //the image of the map is stored as an image icon and created from the file selected
-          mapImage = scaleImageIcon(new ImageIcon(selectFileWindow.getFileLocation()));
+          mapFileLocation = selectFileWindow.getFileLocation();
+          mapImage = scaleImageIcon(new ImageIcon(mapFileLocation));
 
-          System.out.println(selectFileWindow.getFileLocation());
+          System.out.println(mapFileLocation);
           //the image icon is added to the label
           mapImageLabel.setIcon(mapImage);
 
@@ -134,35 +151,109 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     //if the save button is pressed
     else if(event.getSource() == saveButton)
     {
-      //if it is the first save that has been made then a new file should be created
+      //if this is the first dave, then let the user choose the file to save to
       if(firstSave)
       {
-        //try writing data to the file
+        ChooseInventoryMapFile newFileChooser = new ChooseInventoryMapFile();
+        currentInventoryMapFileBeingEdited = newFileChooser.getFileLocation();
         try
         {
-          FileWriter characterToFileWriter = new FileWriter((new File("./testFile.imp")));
+          characterToFileWriter = new FileWriter((new File(currentInventoryMapFileBeingEdited)));
+          lineToFileWriter = new PrintWriter(characterToFileWriter);
+          lineToFileWriter.write(mapFileLocation);
+        }
+        catch(Exception exception)
+        {
+          System.out.println("Error: " + exception + " " +  exception.getCause());
+        }
 
-          PrintWriter lineToFileWriter = new PrintWriter(characterToFileWriter);
+      }//if
 
-          //gets the line seperator for the current running system.
-          String lineSeperator = System.getProperty("line.separator");
+      //try writing data to the file
+      try
+      {
+        //use the file that the user chose previously
+        //will ensure the file is overwritten every time - inefficient but there will be no duplicates
+        characterToFileWriter = new FileWriter((new File(currentInventoryMapFileBeingEdited)));
+        lineToFileWriter = new PrintWriter(characterToFileWriter);
 
-          characterToFileWriter.write("1" + lineSeperator);
-          characterToFileWriter.write("2" + lineSeperator);
-          lineToFileWriter.write("Name" + lineSeperator);
-          lineToFileWriter.write("Location" + lineSeperator);
-          lineToFileWriter.write("Type" + lineSeperator);
+        //gets the line seperator for the current running system.
+        String lineSeperator = System.getProperty("line.separator");
+        setOfMapPoints = InputDetailsWindow.getSetOfMapPoints();
+        iterator = setOfMapPoints.iterator();
+        lineToFileWriter.write(mapFileLocation + lineSeperator);
+        //loops through all of the plotted MapPoints so far and writes them to the file
+        while(iterator.hasNext())
+        {
+          MapPoint currentMapPoint = iterator.next();
+          lineToFileWriter.write(currentMapPoint.getXCoordinate() + lineSeperator);
+          lineToFileWriter.write(currentMapPoint.getYCoordinate() + lineSeperator);
+          lineToFileWriter.write(currentMapPoint.getName() + lineSeperator);
+          lineToFileWriter.write(currentMapPoint.getLocation() + lineSeperator);
+          lineToFileWriter.write(currentMapPoint.getTypeOfDevice() + lineSeperator);
+        }//while
+        //it is not longer the first save
+        firstSave = false;
+
+      }//try
+      catch(Exception exception)
+      {
+        System.out.println("Error: " + exception + " " +  exception.getCause());
+      }//catch
+      //always tries to close the Writers
+      finally
+      {
+        try
+        {
           characterToFileWriter.close();
           lineToFileWriter.close();
-          //it is not longer the first save
-          firstSave = false;
         }//try
         catch(Exception exception)
         {
           System.out.println("Error: " + exception.getCause());
         }//catch
-      }//if
+      }//finally
     }//else if
+
+    else if(event.getSource() == loadFileButton)
+    {
+      try
+      {
+        mapPane.removeAll();
+        ChooseFileWindow loadFile = new ChooseFileWindow(new FileNameExtensionFilter("Inventory Mapper Files", "imp"));
+        loadFile.setVisible(true);
+        String fileToReadLocation = loadFile.getFileLocation();
+        lineFromFileReader = new BufferedReader(new FileReader(fileToReadLocation));
+        mapFileLocation = lineFromFileReader.readLine();
+        String xCoordinateReadAsString = "";
+        while((xCoordinateReadAsString = lineFromFileReader.readLine()) != null)
+        {
+          int xCoordinateRead = Integer.parseInt(xCoordinateReadAsString);
+          int yCoordinateRead = Integer.parseInt(lineFromFileReader.readLine());
+          String name = lineFromFileReader.readLine();
+          String location = lineFromFileReader.readLine();
+          String type = lineFromFileReader.readLine();
+          setOfMapPoints = new TreeSet<MapPoint>();
+
+          setOfMapPoints.add(new MapPoint(xCoordinateRead, yCoordinateRead, name, location, type));
+          placeMapPoint(xCoordinateRead, yCoordinateRead);
+        }
+        System.out.println(mapFileLocation);
+        mapImage = scaleImageIcon(new ImageIcon(mapFileLocation));
+        //the image icon is added to the label
+        mapImageLabel.setIcon(mapImage);
+        mapPane.setBounds(0, 0, mapImage.getIconWidth(), mapImage.getIconHeight());
+        mapPane.add(mapImageLabel, JLayeredPane.DEFAULT_LAYER);
+        mapPanePanel.add(mapPane);
+        pack();
+
+        lineFromFileReader.close();
+      }
+      catch(Exception exception)
+      {
+        System.out.println("Error: " + exception + " " +  exception.getCause());
+      }
+    }
   }// actionPerformed
 
   @Override
@@ -171,14 +262,15 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
 
     InputDetailsWindow inputDetailsWindow = new InputDetailsWindow();
     //gets the setOfMapPoints from the InputDetailsWindow
-    Set<MapPoint> setOfMapPoints = InputDetailsWindow.getSetOfMapPoints();
+    setOfMapPoints = InputDetailsWindow.getSetOfMapPoints();
 
     //checks if the point being placed is the first point to place
     //if it is then it is marked on the map
     if(setOfMapPoints.isEmpty())
     {
-      placeMapPoint(event.getX(), event.getY());
+
       inputDetailsWindow.setVisible(true);
+      placeMapPoint(event.getX(), event.getY());
     }
     //if it is not the first, then it looks for another close point
     else
@@ -208,8 +300,11 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
         //otherwise if the end of the set of close points is reached then the point is placed anyway because a close point hasn't been found
         else if (!iterator.hasNext())
         {
-          placeMapPoint(event.getX(), event.getY());
+
           inputDetailsWindow.setVisible(true);
+
+          placeMapPoint(event.getX(), event.getY());
+
         }//else if
       }// while
     }//else
