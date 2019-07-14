@@ -107,28 +107,8 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
         {
           //the image of the map is stored as an image icon and created from the file selected
           mapFileLocation = selectFileWindow.getFileLocation();
-          mapImage = scaleImageIcon(new ImageIcon(mapFileLocation));
 
-          System.out.println(mapFileLocation);
-          //the image icon is added to the label
-          mapImageLabel.setIcon(mapImage);
-
-          //the bounds of the layered pane are set which must be done for the layered pane to work correctly
-          mapPane.setBounds(0, 0, mapImage.getIconWidth(), mapImage.getIconHeight());
-
-          //the layered pane is added to the GUI in another panel
-          mapPanePanel.add(mapPane);
-
-          //the map image is added to the bottom most layer of the the layered panel
-          mapPane.add(mapImageLabel, JLayeredPane.DEFAULT_LAYER);
-
-          mapImageLabel.setBounds(0, 0, mapImage.getIconWidth(), mapImage.getIconHeight());
-          setPreferredSize(new Dimension(mapImage.getIconWidth(), mapImage.getIconHeight()));
-
-          //the image of the map has a mouse listener associated with it
-          mapImageLabel.addMouseListener(this);
-
-          pack();
+          placeImageMap(mapFileLocation);
         }
       }//try
       //if an Illegal argument exception is made (ie adding another image as the map) then the old one is removed and the new one is added
@@ -172,7 +152,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
         {
           try
           {
-            lineToFileWriter.close()
+            lineToFileWriter.close();
           }//try
           catch(Exception exception)
           {
@@ -202,7 +182,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
           lineToFileWriter.write(currentMapPoint.getXCoordinate() + lineSeperator);
           lineToFileWriter.write(currentMapPoint.getYCoordinate() + lineSeperator);
           lineToFileWriter.write(currentMapPoint.getName() + lineSeperator);
-          lineToFileWriter.write(currentMapPoint.getLocation() + lineSeperator);
+          lineToFileWriter.write(currentMapPoint.getPointLocation() + lineSeperator);
           lineToFileWriter.write(currentMapPoint.getTypeOfDevice() + lineSeperator);
         }//while
         //it is not longer the first save
@@ -248,7 +228,6 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
 
         //while there are still records in the file to read
         //reads the file and also executes th condition simultaneously
-
         while((xCoordinateReadAsString = lineFromFileReader.readLine()) != null)
         {
           //gets the data from the file
@@ -258,19 +237,11 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
           String location = lineFromFileReader.readLine();
           String type = lineFromFileReader.readLine();
           //adds the new map point to the tree set
-
           setOfMapPoints.add(new MapPoint(xCoordinateRead, yCoordinateRead, name, location, type));
           placeMapPoint(xCoordinateRead, yCoordinateRead);
         }//while
 
-        //loads the new image from the address that was stored in the file
-        mapImage = scaleImageIcon(new ImageIcon(mapFileLocation));
-        //the image icon is added to the label
-        mapImageLabel.setIcon(mapImage);
-        mapPane.setBounds(0, 0, mapImage.getIconWidth(), mapImage.getIconHeight());
-        mapPane.add(mapImageLabel, JLayeredPane.DEFAULT_LAYER);
-        mapPanePanel.add(mapPane);
-        pack();
+        placeImageMap(mapFileLocation);
       }//try
       catch(Exception exception)
       {
@@ -296,8 +267,10 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
 
     InputDetailsWindow inputDetailsWindow = new InputDetailsWindow();
     //gets the setOfMapPoints from the InputDetailsWindow
-    setOfMapPoints = InputDetailsWindow.getSetOfMapPoints();
-
+    System.out.println(setOfMapPoints);
+    //retains its current values ane gets the data from the other class
+    setOfMapPoints.addAll(InputDetailsWindow.getSetOfMapPoints());
+    System.out.println(setOfMapPoints);
     //checks if the point being placed is the first point to place
     //if it is then it is marked on the map
     if(setOfMapPoints.isEmpty())
@@ -326,7 +299,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
         if (inXRange && inYRange)
         {
           nameLabel.setText("Name: " + mapPointToCheck.getName());
-          locationLabel.setText("Location: " + mapPointToCheck.getLocation());
+          locationLabel.setText("Location: " + mapPointToCheck.getPointLocation());
           typeLabel.setText("Type of Device: " + mapPointToCheck.getTypeOfDevice());
           pack();
           break;
@@ -389,6 +362,22 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     //the dot image is added to the GUI at the coordinates of the click
     mapPane.add(dot, JLayeredPane.DEFAULT_LAYER + 1, 0);
   }//placeMapPoint
+
+  private void placeImageMap(String mapFileLocation) throws IllegalArgumentException
+  {
+    //loads the new image from the address that was stored in the file
+    mapImage = scaleImageIcon(new ImageIcon(mapFileLocation));
+    //the image icon is added to the label
+    mapImageLabel.setIcon(mapImage);
+    mapPane.setBounds(0, 0, mapImage.getIconWidth(), mapImage.getIconHeight());
+    mapPanePanel.add(mapPane);
+    mapPane.add(mapImageLabel, JLayeredPane.DEFAULT_LAYER);
+    mapImageLabel.setBounds(0, 0, mapImage.getIconWidth(), mapImage.getIconHeight());
+    setPreferredSize(new Dimension(mapImage.getIconWidth(), mapImage.getIconHeight()));
+    //the image of the map has a mouse listener associated with it
+    mapImageLabel.addMouseListener(this);
+    pack();
+  }//placeImageMap
 
 
   //used to get a reference to the button to select a file
