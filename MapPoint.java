@@ -1,5 +1,6 @@
+import java.awt.Point;
 //class that is used to model a point on the map
-public class MapPoint implements Comparable<MapPoint>
+public class MapPoint extends Point implements Comparable<MapPoint>
 {
   private int xCoordinate = 0;
   private int yCoordinate = 0;
@@ -24,7 +25,7 @@ public class MapPoint implements Comparable<MapPoint>
     {
       return -1;
     }// if
-    else if(other.getXCoordinate() == xCoordinate || other.getYCoordinate() == other.yCoordinate)
+    else if(other.getXCoordinate() == xCoordinate || other.getYCoordinate() == yCoordinate)
     {
       return 0;
     }//else if
@@ -59,7 +60,7 @@ public class MapPoint implements Comparable<MapPoint>
     return name;
   }//getName
 
-  public String getLocation()
+  public String getPointLocation()
   {
     return location;
   }//getDetails
