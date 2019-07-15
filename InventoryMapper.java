@@ -270,10 +270,12 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     }//else if
     else if(event.getSource() == exportCSVButton)
     {
-      ChooseFileWindow loadFile = new ChooseFileWindow(new FileNameExtensionFilter("Comma Seperated Value", "csv"));
-      String csvFileToExportTo = loadFile.getFileLocation();
-      loadFile.setVisible(true);
-      loadFile.dispose();
+      //load a
+      ChooseFileWindow writeToCSVFile = new ChooseFileWindow(new FileNameExtensionFilter("Comma Seperated Value", "csv"));
+      String csvFileToExportTo = writeToCSVFile.getFileLocation();
+      writeToCSVFile.setVisible(true);
+      writeToCSVFile.dispose();
+      //class the method to export to csv
       exportToCSV(csvFileToExportTo);
     }//else if
   }//actionPerformed
@@ -405,9 +407,11 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     try
     {
       csvWriter = new PrintWriter(new FileWriter(new File(csvFile)));
+      //creates the headings of the CSV
       csvWriter.write("Name, Location, Type" + System.getProperty("line.separator"));
       iterator = setOfMapPoints.iterator();
       //loops thorugh allof the map points
+      //goes through every map point and writes them the dara to a CSV in CSV format
       while (iterator.hasNext())
       {
         MapPoint currentMapPoint = iterator.next();
@@ -423,6 +427,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
       System.out.println("An error has occured when writing to the CSV");
       System.err.println("Error: " + exception.getCause());
     }//catch
+    //always tries to close the PrintWriter
     finally
     {
       try
