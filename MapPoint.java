@@ -25,7 +25,7 @@ public class MapPoint extends Point implements Comparable<MapPoint>
     {
       return -1;
     }// if
-    else if(other.getXCoordinate() == xCoordinate || other.getYCoordinate() == yCoordinate)
+    else if(other.getXCoordinate() == xCoordinate && other.getYCoordinate() == yCoordinate)
     {
       return 0;
     }//else if
