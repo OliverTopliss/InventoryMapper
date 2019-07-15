@@ -18,6 +18,7 @@ public class ChooseFileWindow extends JFrame implements ActionListener
   public ChooseFileWindow(FileNameExtensionFilter fileFilter)
   {
     setTitle("Choose File");
+    setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     Container contents = getContentPane();
     //deafult location to load the file chooser is in the current directory
     JFileChooser fileChooser = new JFileChooser("./");
@@ -49,8 +50,9 @@ public class ChooseFileWindow extends JFrame implements ActionListener
       cancelledFileChoice = true;
     }//elseIf
     setVisible(true);
-    setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
     pack();
+
   }//ChooseFileWindow constructor
 
   //currently does nothing
