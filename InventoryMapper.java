@@ -7,6 +7,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.*;
+import java.nio.MappedByteBuffer;
 import java.rmi.MarshalledObject;
 import java.util.Iterator;
 import java.util.Set;
@@ -30,6 +31,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
   private JButton selectFileButton = new JButton("Select File");
   private JButton saveButton = new JButton("Save");
   private JButton loadFileButton = new JButton("Load");
+  private JButton exportCSVButton = new JButton("Export To CSV");
 
   private ImageIcon mapImage = null;
   private String mapFileLocation = "";
@@ -53,6 +55,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
   {
     //gives the GUI a title, layout and adds components to it
     setTitle("Inventory Mapper");
+    setExtendedState(JFrame.MAXIMIZED_BOTH);
 
     contents.setLayout(new BorderLayout());
 
@@ -74,12 +77,14 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     fileChooserPanel.add(selectFileButton);
     fileChooserPanel.add(saveButton);
     fileChooserPanel.add(loadFileButton);
+    fileChooserPanel.add(exportCSVButton);
 
     contents.add(fileChooserPanel, BorderLayout.NORTH);
     //the button has an action listener associated with it
     selectFileButton.addActionListener(this);
     saveButton.addActionListener(this);
     loadFileButton.addActionListener(this);
+    exportCSVButton.addActionListener(this);
     setDefaultCloseOperation(EXIT_ON_CLOSE);
 
     pack();
@@ -100,6 +105,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     {
       //creates a new window for choosing a file to load
       ChooseFileWindow selectFileWindow = new ChooseFileWindow(new FileNameExtensionFilter("JPEG images and png images", "png", "JPEG", "jpg"));
+      selectFileWindow.dispose();
       try
       {
         //only do this if the cancel button is not pressed on the fileChooserForm
@@ -109,7 +115,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
           mapFileLocation = selectFileWindow.getFileLocation();
 
           placeImageMap(mapFileLocation);
-        }
+        }//if
       }//try
       //if an Illegal argument exception is made (ie adding another image as the map) then the old one is removed and the new one is added
       catch (IllegalArgumentException illegalArgumentException)
@@ -137,9 +143,10 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
       {
         ChooseInventoryMapFile newFileChooser = new ChooseInventoryMapFile();
         currentInventoryMapFileBeingEdited = newFileChooser.getFileLocation();
+        newFileChooser.dispose();
         try
         {
-          characterToFileWriter = new FileWriter((new File(currentInventoryMapFileBeingEdited)));
+          characterToFileWriter = new FileWriter(new File(currentInventoryMapFileBeingEdited));
           lineToFileWriter = new PrintWriter(characterToFileWriter);
           //store the location of the image that was used for the map so that it can be loaded later for another .imp file
           lineToFileWriter.write(mapFileLocation);
@@ -172,7 +179,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
 
         //gets the line seperator for the current running system.
         String lineSeperator = System.getProperty("line.separator");
-        setOfMapPoints = InputDetailsWindow.getSetOfMapPoints();
+        setOfMapPoints.addAll(InputDetailsWindow.getSetOfMapPoints());
         iterator = setOfMapPoints.iterator();
         lineToFileWriter.write(mapFileLocation + lineSeperator);
         //loops through all of the plotted MapPoints so far and writes them to the file
@@ -213,6 +220,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     {
       try
       {
+        firstSave = false;
         //clears the mapPane
         mapPane.removeAll();
         //Creates a new JFrame for choosing a .imp file to load
@@ -220,10 +228,11 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
         loadFile.setVisible(true);
         //gets the file to load from the JFrame
         String fileToReadLocation = loadFile.getFileLocation();
+        currentInventoryMapFileBeingEdited = fileToReadLocation;
         lineFromFileReader = new BufferedReader(new FileReader(fileToReadLocation));
         //read the map file location fromt he file that is loaded
         mapFileLocation = lineFromFileReader.readLine();
-        setOfMapPoints = new TreeSet<MapPoint>();
+        setOfMapPoints.clear();
         String xCoordinateReadAsString = "";
 
         //while there are still records in the file to read
@@ -259,6 +268,14 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
         }//catch
       }//finally
     }//else if
+    else if(event.getSource() == exportCSVButton)
+    {
+      ChooseFileWindow loadFile = new ChooseFileWindow(new FileNameExtensionFilter("Comma Seperated Value", "csv"));
+      String csvFileToExportTo = loadFile.getFileLocation();
+      loadFile.setVisible(true);
+      loadFile.dispose();
+      exportToCSV(csvFileToExportTo);
+    }//else if
   }//actionPerformed
 
   @Override
@@ -267,10 +284,8 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
 
     InputDetailsWindow inputDetailsWindow = new InputDetailsWindow();
     //gets the setOfMapPoints from the InputDetailsWindow
-    System.out.println(setOfMapPoints);
     //retains its current values ane gets the data from the other class
     setOfMapPoints.addAll(InputDetailsWindow.getSetOfMapPoints());
-    System.out.println(setOfMapPoints);
     //checks if the point being placed is the first point to place
     //if it is then it is marked on the map
     if(setOfMapPoints.isEmpty())
@@ -278,7 +293,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
 
       inputDetailsWindow.setVisible(true);
       placeMapPoint(event.getX(), event.getY());
-    }
+    }//if
     //if it is not the first, then it looks for another close point
     else
     {
@@ -365,6 +380,8 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
 
   private void placeImageMap(String mapFileLocation) throws IllegalArgumentException
   {
+    //removes the current mouselistener to prevent adding multiple listeners
+    mapImageLabel.removeMouseListener(this);
     //loads the new image from the address that was stored in the file
     mapImage = scaleImageIcon(new ImageIcon(mapFileLocation));
     //the image icon is added to the label
@@ -373,12 +390,52 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     mapPanePanel.add(mapPane);
     mapPane.add(mapImageLabel, JLayeredPane.DEFAULT_LAYER);
     mapImageLabel.setBounds(0, 0, mapImage.getIconWidth(), mapImage.getIconHeight());
-    setPreferredSize(new Dimension(mapImage.getIconWidth(), mapImage.getIconHeight()));
+    setMinimumSize(new Dimension(mapImage.getIconWidth() + 100, mapImage.getIconHeight() + 100));
+    //setPreferredSize(new Dimension(mapImage.getIconWidth(), mapImage.getIconHeight()));
     //the image of the map has a mouse listener associated with it
     mapImageLabel.addMouseListener(this);
     pack();
   }//placeImageMap
 
+
+  //method which takes a file and writes the data to it in a format of a CSV file
+  private void exportToCSV(String csvFile)
+  {
+    PrintWriter csvWriter = null;
+    try
+    {
+      csvWriter = new PrintWriter(new FileWriter(new File(csvFile)));
+      csvWriter.write("Name, Location, Type" + System.getProperty("line.separator"));
+      iterator = setOfMapPoints.iterator();
+      //loops thorugh allof the map points
+      while (iterator.hasNext())
+      {
+        MapPoint currentMapPoint = iterator.next();
+        csvWriter.append(currentMapPoint.getName() + ",");
+        csvWriter.append(currentMapPoint.getPointLocation() + ",");
+        csvWriter.append(currentMapPoint.getTypeOfDevice());
+        csvWriter.append(System.getProperty("line.separator"));
+      }//while
+
+    }//try
+    catch(Exception exception)
+    {
+      System.out.println("An error has occured when writing to the CSV");
+      System.err.println("Error: " + exception.getCause());
+    }//catch
+    finally
+    {
+      try
+      {
+        csvWriter.close();
+      }//try
+      catch(Exception exception)
+      {
+        System.out.println("An error has occured when closing the CSV writer");
+        System.err.println("Error: " + exception.getCause());
+      }//catch
+    }//finally
+  }//exportToCSV
 
   //used to get a reference to the button to select a file
   public JButton getSelectFileButton()
