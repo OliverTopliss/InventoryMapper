@@ -113,14 +113,15 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
         {
           //the image of the map is stored as an image icon and created from the file selected
           mapFileLocation = selectFileWindow.getFileLocation();
-
+          //removes the current map image
+          //mapImageLabel.removeAll();
           placeImageMap(mapFileLocation);
         }//if
       }//try
       //if an Illegal argument exception is made (ie adding another image as the map) then the old one is removed and the new one is added
       catch (IllegalArgumentException illegalArgumentException)
       {
-        System.err.println("error caught: " + illegalArgumentException + " | " + illegalArgumentException.getCause());
+        System.err.println("error caught: " + illegalArgumentException + " : " + illegalArgumentException.getCause());
 
         mapImage = scaleImageIcon(new ImageIcon(selectFileWindow.getFileLocation()));
         //the image icon is added to the label
@@ -235,6 +236,9 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
         setOfMapPoints.clear();
         String xCoordinateReadAsString = "";
 
+        //must come before adding the map points
+        placeImageMap(mapFileLocation);
+
         //while there are still records in the file to read
         //reads the file and also executes th condition simultaneously
         while((xCoordinateReadAsString = lineFromFileReader.readLine()) != null)
@@ -248,9 +252,10 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
           //adds the new map point to the tree set
           setOfMapPoints.add(new MapPoint(xCoordinateRead, yCoordinateRead, name, location, type));
           placeMapPoint(xCoordinateRead, yCoordinateRead);
+          System.out.println("map point loaded");
         }//while
 
-        placeImageMap(mapFileLocation);
+
       }//try
       catch(Exception exception)
       {
@@ -334,7 +339,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     }//else
     //sets the coordinates
     inputDetailsWindow.setCoordinates(event.getX(), event.getY());
-  }// mouseClicked
+  }//mouseClicked
 
   //methods don't currently do anything
   @Override
@@ -382,23 +387,34 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
 
   private void placeImageMap(String mapFileLocation) throws IllegalArgumentException
   {
-    //removes the current mouselistener to prevent adding multiple listeners
-    mapImageLabel.removeMouseListener(this);
-    //loads the new image from the address that was stored in the file
-    mapImage = scaleImageIcon(new ImageIcon(mapFileLocation));
-    //the image icon is added to the label
-    mapImageLabel.setIcon(mapImage);
-    mapPane.setBounds(0, 0, mapImage.getIconWidth(), mapImage.getIconHeight());
-    mapPanePanel.add(mapPane);
-    mapPane.add(mapImageLabel, JLayeredPane.DEFAULT_LAYER);
-    mapImageLabel.setBounds(0, 0, mapImage.getIconWidth(), mapImage.getIconHeight());
-    setMinimumSize(new Dimension(mapImage.getIconWidth() + 100, mapImage.getIconHeight() + 100));
-    //setPreferredSize(new Dimension(mapImage.getIconWidth(), mapImage.getIconHeight()));
-    //the image of the map has a mouse listener associated with it
-    mapImageLabel.addMouseListener(this);
-    pack();
+    //tries to remove the mapPane from the default layer
+    try{ mapPane.removeAll();}
+    //if this is the first image to load then it is ok and if not the error is caught
+    catch(ArrayIndexOutOfBoundsException arrayIndexOutOfBoundsException)
+    {
+      System.out.println("There was no image already present");
+    }//catch
+    //the following is always executed
+    finally
+    {
+      //removes the current mouselistener to prevent adding multiple listeners
+      mapImageLabel.removeMouseListener(this);
+      //loads the new image from the address that was stored in the file
+      mapImage = scaleImageIcon(new ImageIcon(mapFileLocation));
+      //the image icon is added to the label
+      mapImageLabel.setIcon(mapImage);
+      mapPane.setBounds(0, 0, mapImage.getIconWidth(), mapImage.getIconHeight());
+      //adds the mapPane to the bottom layer
+      mapPanePanel.add(mapPane, 0);
+      mapPane.add(mapImageLabel, JLayeredPane.DEFAULT_LAYER);
+      mapImageLabel.setBounds(0, 0, mapImage.getIconWidth(), mapImage.getIconHeight());
+      setMinimumSize(new Dimension(mapImage.getIconWidth() + 100, mapImage.getIconHeight() + 100));
+      //setPreferredSize(new Dimension(mapImage.getIconWidth(), mapImage.getIconHeight()));
+      //the image of the map has a mouse listener associated with it
+      mapImageLabel.addMouseListener(this);
+      pack();
+    }//finally
   }//placeImageMap
-
 
   //method which takes a file and writes the data to it in a format of a CSV file
   private void exportToCSV(String csvFile)
