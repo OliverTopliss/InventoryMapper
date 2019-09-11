@@ -288,57 +288,67 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
   @Override
   public void mouseClicked(MouseEvent event)
   {
-
-    InputDetailsWindow inputDetailsWindow = new InputDetailsWindow();
-    //gets the setOfMapPoints from the InputDetailsWindow
-    //retains its current values ane gets the data from the other class
-    setOfMapPoints.addAll(InputDetailsWindow.getSetOfMapPoints());
-    //checks if the point being placed is the first point to place
-    //if it is then it is marked on the map
-    if(setOfMapPoints.isEmpty())
+    //if the left click is pressed
+    if(event.getButton() == MouseEvent.BUTTON1)
     {
 
-      inputDetailsWindow.setVisible(true);
-      placeMapPoint(event.getX(), event.getY());
-    }//if
-    //if it is not the first, then it looks for another close point
-    else
-    {
-      //creates an interator to go thorugh the set of MapPoints
-      iterator = setOfMapPoints.iterator();
-
-      //iterates through the set and checks if the point being placed is too close to another point
-      //if it is too close then there is a clash and the already created MapPoint should be output
-      while (iterator.hasNext())
+      InputDetailsWindow inputDetailsWindow = new InputDetailsWindow();
+      //gets the setOfMapPoints from the InputDetailsWindow
+      //retains its current values ane gets the data from the other class
+      setOfMapPoints.addAll(InputDetailsWindow.getSetOfMapPoints());
+      //checks if the point being placed is the first point to place
+      //if it is then it is marked on the map
+      if (setOfMapPoints.isEmpty())
       {
-        MapPoint mapPointToCheck = iterator.next();
-        System.out.println("Event: " + event.getX() + " " + event.getY());
-        System.out.println(mapPointToCheck);
-        boolean inXRange = mapPointToCheck.getXCoordinate() >= event.getX() - 10 && mapPointToCheck.getXCoordinate() <= event.getX() + 10;
-        boolean inYRange = mapPointToCheck.getYCoordinate() >= event.getY() - 10 && mapPointToCheck.getYCoordinate() <= event.getY() + 10;
 
-        //if a close point is found then its details are output and the loop is exited
-        if (inXRange && inYRange)
+        inputDetailsWindow.setVisible(true);
+        placeMapPoint(event.getX(), event.getY());
+      }//if
+      //if it is not the first, then it looks for another close point
+      else
+      {
+        //creates an interator to go thorugh the set of MapPoints
+        iterator = setOfMapPoints.iterator();
+
+        //iterates through the set and checks if the point being placed is too close to another point
+        //if it is too close then there is a clash and the already created MapPoint should be output
+        while (iterator.hasNext())
         {
-          nameLabel.setText("Name: " + mapPointToCheck.getName());
-          locationLabel.setText("Location: " + mapPointToCheck.getPointLocation());
-          typeLabel.setText("Type of Device: " + mapPointToCheck.getTypeOfDevice());
-          pack();
-          break;
-        }// if
-        //otherwise if the end of the set of close points is reached then the point is placed anyway because a close point hasn't been found
-        else if (!iterator.hasNext())
-        {
+          MapPoint mapPointToCheck = iterator.next();
+          System.out.println("Event: " + event.getX() + " " + event.getY());
+          System.out.println(mapPointToCheck);
+          boolean inXRange = mapPointToCheck.getXCoordinate() >= event.getX() - 10 && mapPointToCheck.getXCoordinate() <= event.getX() + 10;
+          boolean inYRange = mapPointToCheck.getYCoordinate() >= event.getY() - 10 && mapPointToCheck.getYCoordinate() <= event.getY() + 10;
 
-          inputDetailsWindow.setVisible(true);
+          //if a close point is found then its details are output and the loop is exited
+          if (inXRange && inYRange)
+          {
+            nameLabel.setText("Name: " + mapPointToCheck.getName());
+            locationLabel.setText("Location: " + mapPointToCheck.getPointLocation());
+            typeLabel.setText("Type of Device: " + mapPointToCheck.getTypeOfDevice());
+            pack();
+            break;
+          }// if
+          //otherwise if the end of the set of close points is reached then the point is placed anyway because a close point hasn't been found
+          else if (!iterator.hasNext())
+          {
 
-          placeMapPoint(event.getX(), event.getY());
+            inputDetailsWindow.setVisible(true);
 
-        }//else if
-      }// while
-    }//else
-    //sets the coordinates
-    inputDetailsWindow.setCoordinates(event.getX(), event.getY());
+            placeMapPoint(event.getX(), event.getY());
+
+          }//else if
+        }// while
+      }//else
+      //sets the coordinates
+      inputDetailsWindow.setCoordinates(event.getX(), event.getY());
+    }//if
+    //if the right click is pressed
+    else if(event.getButton() == MouseEvent.BUTTON3)
+    {
+      System.out.println("RIGHT CLICK!");
+
+    }//else if
   }//mouseClicked
 
   //methods don't currently do anything
