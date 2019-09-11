@@ -48,6 +48,10 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
 
   private Set<MapPoint> setOfMapPoints = new TreeSet<MapPoint>();
 
+  private JPopupMenu mapPointMenu;
+  private JMenuItem removeMapPointItem = new JMenuItem("Remove this MapPoint");
+  private JMenuItem editMapPointItem = new JMenuItem("Edit this MapPoint");
+
   private boolean firstSave = true;
 
   //constructor method
@@ -346,8 +350,10 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     //if the right click is pressed
     else if(event.getButton() == MouseEvent.BUTTON3)
     {
-      System.out.println("RIGHT CLICK!");
-
+      mapPointMenu = new JPopupMenu();
+      mapPointMenu.add(removeMapPointItem);
+      mapPointMenu.add(editMapPointItem);
+      mapPointMenu.show(event.getComponent(), event.getX(), event.getY());
     }//else if
   }//mouseClicked
 
