@@ -53,6 +53,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
   private JMenuItem editMapPointItem = new JMenuItem("Edit this MapPoint");
 
   private boolean firstSave = true;
+  private MouseEvent rightClickEvent;
 
   //constructor method
   public InventoryMapper()
@@ -291,9 +292,25 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
       exportToCSV(csvFileToExportTo);
     }//else if
 
+    //if the user tries to remove the MapPoint at this location
     if(event.getSource() == removeMapPointItem)
     {
+      iterator = setOfMapPoints.iterator();
+      MapPoint currentMapPoint;
 
+      //loops through all of the map points to find the nearest one to this point and removes it
+      while(iterator.hasNext())
+      {
+        System.out.println("removing map point");
+        currentMapPoint = iterator.next();
+        if(checkMapPointIsInRange(currentMapPoint, rightClickEvent))
+        {
+          setOfMapPoints.remove(currentMapPoint);
+          System.out.println("deleted map point");
+          updateMapGUI();
+          break;
+        }//if
+      }//while
     }//if
   }//actionPerformed
 
@@ -308,11 +325,12 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
       //gets the setOfMapPoints from the InputDetailsWindow
       //retains its current values ane gets the data from the other class
       setOfMapPoints.addAll(InputDetailsWindow.getSetOfMapPoints());
+      System.out.println(setOfMapPoints);
+
       //checks if the point being placed is the first point to place
       //if it is then it is marked on the map
       if (setOfMapPoints.isEmpty())
       {
-
         inputDetailsWindow.setVisible(true);
         placeMapPoint(event.getX(), event.getY());
       }//if
@@ -337,7 +355,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
             typeLabel.setText("Type of Device: " + mapPointToCheck.getTypeOfDevice());
             pack();
             break;
-          }// if
+          }//if
           //otherwise if the end of the set of close points is reached then the point is placed anyway because a close point hasn't been found
           else if (!iterator.hasNext())
           {
@@ -365,6 +383,9 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
           mapPointMenu.add(removeMapPointItem);
           mapPointMenu.add(editMapPointItem);
           mapPointMenu.show(event.getComponent(), event.getX(), event.getY());
+          //stores the rightClick event so that the coordinates of the event can be retrived when editing or removing the MapPoint
+          rightClickEvent = event;
+
         }//if
       }//while
     }//else if
@@ -494,6 +515,19 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
 
     return inYRange && inXRange;
   }//checkMapPointIsInRange Method
+
+  private void updateMapGUI()
+  {
+    placeImageMap(mapFileLocation);
+
+    iterator = setOfMapPoints.iterator();
+    MapPoint currentMapPoint;
+    while(iterator.hasNext())
+    {
+      currentMapPoint = iterator.next();
+      placeMapPoint(currentMapPoint.getXCoordinate(), currentMapPoint.getYCoordinate());
+    }//while
+  }//updateMapGUI method
 
   //used to get a reference to the button to select a file
   public JButton getSelectFileButton()
