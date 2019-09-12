@@ -41,6 +41,7 @@ public class ChooseFileWindow extends JFrame implements ActionListener
       File selectedFile = fileChooser.getSelectedFile();
 
       fileLocation = selectedFile.getPath();
+      dispose();
     }//if
     //otherwise if the cancel button is pressed then do...
     else if(buttonPressed == fileChooser.CANCEL_OPTION)
@@ -48,6 +49,7 @@ public class ChooseFileWindow extends JFrame implements ActionListener
       //sets a flag if the cancel button is pressed
       System.out.println("cancel");
       cancelledFileChoice = true;
+      dispose();
     }//elseIf
     setVisible(true);
 

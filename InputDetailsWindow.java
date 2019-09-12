@@ -18,9 +18,9 @@ public class InputDetailsWindow extends JFrame implements ActionListener
   private String typeOfDevice = "";
   private int xCoordinate = 0;
   private int yCoordinate = 0;
-  //private static Set<MapPoint> setOfMapPoints = new TreeSet<MapPoint>();
   //used to store the object which created this form
   private InventoryMapper inventoryMapper;
+  private MapPoint mapPointBeingEdited = null;
 
   //constructor takes a parameter to be used to interface with the caller GUI
   public InputDetailsWindow(InventoryMapper inventoryMapper)
@@ -40,6 +40,27 @@ public class InputDetailsWindow extends JFrame implements ActionListener
     this.inventoryMapper = inventoryMapper;
   }//InputDetailsWindow constructor
 
+  public InputDetailsWindow(InventoryMapper inventoryMapper, MapPoint mapPoint)
+  {
+    setTitle("Input Details");
+    contents.setLayout(new GridLayout(0,2));
+    contents.add(new JLabel("Name: "));
+    contents.add(nameInputField);
+    nameInputField.setText(mapPoint.getName());
+    contents.add(new JLabel("Location: "));
+    contents.add(locationInputField);
+    locationInputField.setText(mapPoint.getPointLocation());
+    contents.add(new JLabel("Type of Device: "));
+    contents.add(typeInputField);
+    typeInputField.setText(mapPoint.getTypeOfDevice());
+    contents.add(confirmDetailsButton);
+    confirmDetailsButton.addActionListener(this);
+    setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+    pack();
+    mapPointBeingEdited = mapPoint;
+    this.inventoryMapper = inventoryMapper;
+  }//InputDetailsWindow constructor
+
   @Override
   public void actionPerformed(ActionEvent event)
   {
@@ -53,9 +74,18 @@ public class InputDetailsWindow extends JFrame implements ActionListener
       //x and y coordinates are assigned to the xCoordinate and yCorrdinate varaibles when the point is first placed (clicked)
       MapPoint mapPoint = new MapPoint(xCoordinate, yCoordinate, name, location, typeOfDevice);
       //adds the new point to the set of MapPoints belonging to the main GUI
-      inventoryMapper.addMapPointToSetOfMapPoints(mapPoint);
+
+      if(mapPointBeingEdited != null)
+      {
+        inventoryMapper.removeMapPointFromSetOfMapPoints(mapPointBeingEdited);
+        inventoryMapper.addMapPointToSetOfMapPoints(mapPoint);
+      }//if
+      else
+      {
+        inventoryMapper.addMapPointToSetOfMapPoints(mapPoint);
+      }//else
       dispose();
-    }// if
+    }//if
   }//actionPerformed
 
   //mutator method for the x and y coordinates of the mouse click (location of a point to make)

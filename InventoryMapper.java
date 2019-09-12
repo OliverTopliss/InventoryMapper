@@ -188,7 +188,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
 
         //gets the line seperator for the current running system.
         String lineSeperator = System.getProperty("line.separator");
-        setOfMapPoints.addAll(InputDetailsWindow.getSetOfMapPoints());
+        //setOfMapPoints.addAll(InputDetailsWindow.getSetOfMapPoints());
         iterator = setOfMapPoints.iterator();
         lineToFileWriter.write(mapFileLocation + lineSeperator);
         //loops through all of the plotted MapPoints so far and writes them to the file
@@ -203,7 +203,6 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
         }//while
         //it is not longer the first save
         firstSave = false;
-
       }//try
       catch(Exception exception)
       {
@@ -293,7 +292,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     }//else if
 
     //if the user tries to remove the MapPoint at this location
-    if(event.getSource() == removeMapPointItem)
+     else if(event.getSource() == removeMapPointItem)
     {
       iterator = setOfMapPoints.iterator();
       MapPoint currentMapPoint;
@@ -311,7 +310,26 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
           break;
         }//if
       }//while
-    }//if
+    }//else if
+
+    else if(event.getSource() == editMapPointItem)
+    {
+      iterator = setOfMapPoints.iterator();
+      MapPoint currentMapPoint;
+      while(iterator.hasNext())
+      {
+        currentMapPoint = iterator.next();
+        if(checkMapPointIsInRange(currentMapPoint, rightClickEvent))
+        {
+          System.out.println("Loading MapPoint to edit");
+          InputDetailsWindow editMapPointDetailsWindow = new InputDetailsWindow(this, currentMapPoint);
+          editMapPointDetailsWindow.setVisible(true);
+          editMapPointDetailsWindow.setCoordinates(rightClickEvent.getX(), rightClickEvent.getY());
+          break;
+        }//if
+      }//while
+
+    }//else if
   }//actionPerformed
 
   @Override
@@ -536,8 +554,19 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
 
 
   //mutator method for increasing the set size
-  public void addMapPointToSetOfMapPoints(MapPoint mapPointToAdd)
+  public boolean addMapPointToSetOfMapPoints(MapPoint mapPointToAdd)
   {
-    setOfMapPoints.add(mapPointToAdd);
+
+    boolean added = setOfMapPoints.add(mapPointToAdd);
+    System.out.println("Add: " + setOfMapPoints + " " + added);
+    return added;
   }//addMapPointToSetOfMapPoints method
+
+  //mutator method for decreasing the set size
+  public boolean removeMapPointFromSetOfMapPoints(MapPoint mapPointToRemove)
+  {
+    boolean removed = setOfMapPoints.remove(mapPointToRemove);
+    System.out.println("Remove: " + setOfMapPoints + " " + removed);
+    return removed;
+  }//removeMapPointFromSetOfMapPoints method
 }// InventoryMapper Class
