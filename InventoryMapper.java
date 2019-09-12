@@ -91,6 +91,9 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     exportCSVButton.addActionListener(this);
     setDefaultCloseOperation(EXIT_ON_CLOSE);
 
+    removeMapPointItem.addActionListener(this);
+    editMapPointItem.addActionListener(this);
+
     pack();
   }// InventoryMapper Constructor
 
@@ -287,6 +290,11 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
       //class the method to export to csv
       exportToCSV(csvFileToExportTo);
     }//else if
+
+    if(event.getSource() == removeMapPointItem)
+    {
+
+    }//if
   }//actionPerformed
 
   @Override
@@ -321,11 +329,8 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
           MapPoint mapPointToCheck = iterator.next();
           System.out.println("Event: " + event.getX() + " " + event.getY());
           System.out.println(mapPointToCheck);
-          boolean inXRange = mapPointToCheck.getXCoordinate() >= event.getX() - 10 && mapPointToCheck.getXCoordinate() <= event.getX() + 10;
-          boolean inYRange = mapPointToCheck.getYCoordinate() >= event.getY() - 10 && mapPointToCheck.getYCoordinate() <= event.getY() + 10;
-
           //if a close point is found then its details are output and the loop is exited
-          if (inXRange && inYRange)
+          if (checkMapPointIsInRange(mapPointToCheck, event))
           {
             nameLabel.setText("Name: " + mapPointToCheck.getName());
             locationLabel.setText("Location: " + mapPointToCheck.getPointLocation());
@@ -350,10 +355,18 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     //if the right click is pressed
     else if(event.getButton() == MouseEvent.BUTTON3)
     {
-      mapPointMenu = new JPopupMenu();
-      mapPointMenu.add(removeMapPointItem);
-      mapPointMenu.add(editMapPointItem);
-      mapPointMenu.show(event.getComponent(), event.getX(), event.getY());
+      iterator = setOfMapPoints.iterator();
+      MapPoint mapPointToCheck;
+      while(iterator.hasNext())
+      {
+        if(checkMapPointIsInRange(mapPointToCheck = iterator.next(), event))
+        {
+          mapPointMenu = new JPopupMenu();
+          mapPointMenu.add(removeMapPointItem);
+          mapPointMenu.add(editMapPointItem);
+          mapPointMenu.show(event.getComponent(), event.getX(), event.getY());
+        }//if
+      }//while
     }//else if
   }//mouseClicked
 
@@ -361,22 +374,22 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
   @Override
   public void mouseEntered(MouseEvent event)
   {
-  }// mouseEntered
+  }//mouseEntered
 
   @Override
   public void mouseExited(MouseEvent event)
   {
-  }// mouseExited
+  }//mouseExited
 
   @Override
   public void mousePressed(MouseEvent event)
   {
-  }// mousePressed
+  }//mousePressed
 
   @Override
   public void mouseReleased(MouseEvent event)
   {
-  }// mouseReleased
+  }//mouseReleased
 
 
   //method that is called which will scale the selected image icon to a specific size.
@@ -473,6 +486,14 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
       }//catch
     }//finally
   }//exportToCSV
+
+  private boolean checkMapPointIsInRange(MapPoint mapPointToCheck, MouseEvent event)
+  {
+    boolean inXRange = mapPointToCheck.getXCoordinate() >= event.getX() - 10 && mapPointToCheck.getXCoordinate() <= event.getX() + 10;
+    boolean inYRange = mapPointToCheck.getYCoordinate() >= event.getY() - 10 && mapPointToCheck.getYCoordinate() <= event.getY() + 10;
+
+    return inYRange && inXRange;
+  }//checkMapPointIsInRange Method
 
   //used to get a reference to the button to select a file
   public JButton getSelectFileButton()
