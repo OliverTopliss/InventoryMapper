@@ -321,10 +321,10 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     if(event.getButton() == MouseEvent.BUTTON1)
     {
 
-      InputDetailsWindow inputDetailsWindow = new InputDetailsWindow();
+      InputDetailsWindow inputDetailsWindow = new InputDetailsWindow(this);
       //gets the setOfMapPoints from the InputDetailsWindow
       //retains its current values ane gets the data from the other class
-      setOfMapPoints.addAll(InputDetailsWindow.getSetOfMapPoints());
+      //setOfMapPoints.addAll(InputDetailsWindow.getSetOfMapPoints());
       System.out.println(setOfMapPoints);
 
       //checks if the point being placed is the first point to place
@@ -385,7 +385,6 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
           mapPointMenu.show(event.getComponent(), event.getX(), event.getY());
           //stores the rightClick event so that the coordinates of the event can be retrived when editing or removing the MapPoint
           rightClickEvent = event;
-
         }//if
       }//while
     }//else if
@@ -535,4 +534,10 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     return selectFileButton;
   }// getSeledtedFileButton
 
+
+  //mutator method for increasing the set size
+  public void addMapPointToSetOfMapPoints(MapPoint mapPointToAdd)
+  {
+    setOfMapPoints.add(mapPointToAdd);
+  }//addMapPointToSetOfMapPoints method
 }// InventoryMapper Class

@@ -18,9 +18,12 @@ public class InputDetailsWindow extends JFrame implements ActionListener
   private String typeOfDevice = "";
   private int xCoordinate = 0;
   private int yCoordinate = 0;
-  private static Set<MapPoint> setOfMapPoints = new TreeSet<MapPoint>();
+  //private static Set<MapPoint> setOfMapPoints = new TreeSet<MapPoint>();
+  //used to store the object which created this form
+  private InventoryMapper inventoryMapper;
 
-  public InputDetailsWindow()
+  //constructor takes a parameter to be used to interface with the caller GUI
+  public InputDetailsWindow(InventoryMapper inventoryMapper)
   {
     setTitle("Input Details");
     contents.setLayout(new GridLayout(0,2));
@@ -34,6 +37,7 @@ public class InputDetailsWindow extends JFrame implements ActionListener
     confirmDetailsButton.addActionListener(this);
     setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     pack();
+    this.inventoryMapper = inventoryMapper;
   }//InputDetailsWindow constructor
 
   @Override
@@ -48,8 +52,8 @@ public class InputDetailsWindow extends JFrame implements ActionListener
       //creates a new map point when the data is submitted
       //x and y coordinates are assigned to the xCoordinate and yCorrdinate varaibles when the point is first placed (clicked)
       MapPoint mapPoint = new MapPoint(xCoordinate, yCoordinate, name, location, typeOfDevice);
-
-      setOfMapPoints.add(mapPoint);
+      //adds the new point to the set of MapPoints belonging to the main GUI
+      inventoryMapper.addMapPointToSetOfMapPoints(mapPoint);
       dispose();
     }// if
   }//actionPerformed
@@ -62,9 +66,9 @@ public class InputDetailsWindow extends JFrame implements ActionListener
   }//setCoordinates
 
   //accessor method for getting access to the set of MapPoints
-  public static Set<MapPoint> getSetOfMapPoints()
+  /*public static Set<MapPoint> getSetOfMapPoints()
   {
     return setOfMapPoints;
-  }//getSetOfMapPoints
+  }//getSetOfMapPoints*/
 
 }//InputDetailsClass
