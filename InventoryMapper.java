@@ -33,6 +33,13 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
   private JButton loadFileButton = new JButton("Load");
   private JButton exportCSVButton = new JButton("Export To CSV");
 
+  private JPopupMenu mapPointMenu;
+  private JMenuItem removeMapPointItem = new JMenuItem("Remove this MapPoint");
+  private JMenuItem editMapPointItem = new JMenuItem("Edit this MapPoint");
+
+  private String[] arrayOfColourNames = {"Red", "Blue", "Yellow", "Green",  "Orange", "Purple", "Black", "Pink", "Grey", "Brown"};
+  private JComboBox<String> comboBoxOfColours = new JComboBox<String>(arrayOfColourNames);
+
   private ImageIcon mapImage = null;
   private String mapFileLocation = "";
 
@@ -48,9 +55,8 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
 
   private Set<MapPoint> setOfMapPoints = new TreeSet<MapPoint>();
 
-  private JPopupMenu mapPointMenu;
-  private JMenuItem removeMapPointItem = new JMenuItem("Remove this MapPoint");
-  private JMenuItem editMapPointItem = new JMenuItem("Edit this MapPoint");
+  //the default colour is red
+  private String fileLocationOfColourDot = "./RedDot.png";
 
   private boolean firstSave = true;
   private MouseEvent rightClickEvent;
@@ -75,6 +81,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     displayDataPanel.add(nameLabel);
     displayDataPanel.add(locationLabel);
     displayDataPanel.add(typeLabel);
+    
 
     //the button to open the map image file is stored in a flow layout
     fileChooserPanel.setLayout(new FlowLayout());
@@ -83,6 +90,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     fileChooserPanel.add(saveButton);
     fileChooserPanel.add(loadFileButton);
     fileChooserPanel.add(exportCSVButton);
+    fileChooserPanel.add(comboBoxOfColours);
 
     contents.add(fileChooserPanel, BorderLayout.NORTH);
     //the button has an action listener associated with it
@@ -94,16 +102,17 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
 
     removeMapPointItem.addActionListener(this);
     editMapPointItem.addActionListener(this);
+    comboBoxOfColours.addActionListener(this);
 
     pack();
-  }// InventoryMapper Constructor
+  }//InventoryMapper Constructor
 
 
   public static void main (String[] args)
   {
     InventoryMapper inventoryMapper = new InventoryMapper();
     inventoryMapper.setVisible(true);
-  }// main
+  }//main
 
   //performed when the button to open the file is clicked
   @Override
@@ -200,6 +209,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
           lineToFileWriter.write(currentMapPoint.getName() + lineSeperator);
           lineToFileWriter.write(currentMapPoint.getPointLocation() + lineSeperator);
           lineToFileWriter.write(currentMapPoint.getTypeOfDevice() + lineSeperator);
+          lineToFileWriter.write(currentMapPoint.getColour() + lineSeperator);
         }//while
         //it is not longer the first save
         firstSave = false;
@@ -256,8 +266,10 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
           String name = lineFromFileReader.readLine();
           String location = lineFromFileReader.readLine();
           String type = lineFromFileReader.readLine();
+          String colour = lineFromFileReader.readLine();
+          fileLocationOfColourDot = "./" + colour + "Dot.png";
           //adds the new map point to the tree set
-          setOfMapPoints.add(new MapPoint(xCoordinateRead, yCoordinateRead, name, location, type));
+          setOfMapPoints.add(new MapPoint(xCoordinateRead, yCoordinateRead, name, location, type, colour));
           placeMapPoint(xCoordinateRead, yCoordinateRead);
           System.out.println("map point loaded");
         }//while
@@ -328,7 +340,44 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
           break;
         }//if
       }//while
+    }//else if
 
+    else if(event.getSource() == comboBoxOfColours)
+    {
+      System.out.println("combo");
+      switch(comboBoxOfColours.getSelectedItem().toString())
+      {
+        case "Red":
+          fileLocationOfColourDot = "./RedDot.png";
+          break;
+        case "Blue":
+          fileLocationOfColourDot = "./BlueDot.png";
+          break;
+        case "Yellow":
+          fileLocationOfColourDot = "./YellowDot.png";
+          break;
+        case "Green":
+          fileLocationOfColourDot = "./GreenDot.png";
+          break;
+        case "Orange":
+          fileLocationOfColourDot = "./OrangeDot.png";
+          break;
+        case "Purple":
+          fileLocationOfColourDot = "./PurpleDot.png";
+          break;
+        case "Pink":
+          fileLocationOfColourDot = "./PinkDot.png";
+          break;
+        case "Black":
+          fileLocationOfColourDot = "./BlackDot.png";
+          break;
+        case "Grey":
+          fileLocationOfColourDot = "./GreyDot.png";
+          break;
+        case "Brown":
+          fileLocationOfColourDot = "./BrownDot.png";
+          break;
+      }//switch
     }//else if
   }//actionPerformed
 
@@ -443,7 +492,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
   private void placeMapPoint(int xCoordinate, int yCoordinate)
   {
     //when the mouse is clicked on the image of the map, a new image is created and added to a label
-    ImageIcon dotImage = new ImageIcon("./dot.png");
+    ImageIcon dotImage = new ImageIcon(fileLocationOfColourDot);
 
     JLabel dot = new JLabel(dotImage);
     dot.setBounds(xCoordinate, yCoordinate, 10, 10);
@@ -569,4 +618,9 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     System.out.println("Remove: " + setOfMapPoints + " " + removed);
     return removed;
   }//removeMapPointFromSetOfMapPoints method
+
+  public String getSelectedColour()
+  {
+    return comboBoxOfColours.getSelectedItem().toString();
+  }//getSelectedColour Method
 }// InventoryMapper Class

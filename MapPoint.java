@@ -7,15 +7,17 @@ public class MapPoint extends Point implements Comparable<MapPoint>
   private String name = "";
   private String location = "";
   private String typeOfDevice = "";
+  private String colourOfMapPoint = "";
 
 
-  public MapPoint(int xCoordinate, int yCoordinate, String name, String location, String typeOfDevice)
+  public MapPoint(int xCoordinate, int yCoordinate, String name, String location, String typeOfDevice, String colourOfMapPoint)
   {
     this.xCoordinate = xCoordinate;
     this.yCoordinate = yCoordinate;
     this.name = name;
     this.location = location;
     this.typeOfDevice = typeOfDevice;
+    this.colourOfMapPoint = colourOfMapPoint;
   }//MapPoint
 
   @Override
@@ -69,4 +71,9 @@ public class MapPoint extends Point implements Comparable<MapPoint>
   {
     return typeOfDevice;
   }//getTypeOfDevice
+
+  public String getColour()
+  {
+    return colourOfMapPoint;
+  }//getColour method
 }//MapPoint class

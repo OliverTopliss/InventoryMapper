@@ -72,7 +72,7 @@ public class InputDetailsWindow extends JFrame implements ActionListener
       typeOfDevice = typeInputField.getText();
       //creates a new map point when the data is submitted
       //x and y coordinates are assigned to the xCoordinate and yCorrdinate varaibles when the point is first placed (clicked)
-      MapPoint mapPoint = new MapPoint(xCoordinate, yCoordinate, name, location, typeOfDevice);
+      MapPoint mapPoint = new MapPoint(xCoordinate, yCoordinate, name, location, typeOfDevice, inventoryMapper.getSelectedColour());
       //adds the new point to the set of MapPoints belonging to the main GUI
 
       if(mapPointBeingEdited != null)
