@@ -155,7 +155,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
         newFileChooser.dispose();
         try
         {
-          characterToFileWriter = new FileWriter(new File(currentInventoryMapFileBeingEdited));
+          characterToFileWriter = new FileWriter(new File(currentInventoryMapFileBeingEdited + ".imp"));
           lineToFileWriter = new PrintWriter(characterToFileWriter);
           //store the location of the image that was used for the map so that it can be loaded later for another .imp file
           lineToFileWriter.write(mapFileLocation);
@@ -183,7 +183,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
       {
         //use the file that the user chose previously
         //will ensure the file is overwritten every time - inefficient but there will be no duplicates
-        characterToFileWriter = new FileWriter((new File(currentInventoryMapFileBeingEdited)));
+        characterToFileWriter = new FileWriter((new File(currentInventoryMapFileBeingEdited + ".imp")));
         lineToFileWriter = new PrintWriter(characterToFileWriter);
 
         //gets the line seperator for the current running system.
