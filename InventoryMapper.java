@@ -489,7 +489,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     PrintWriter csvWriter = null;
     try
     {
-      csvWriter = new PrintWriter(new FileWriter(new File(csvFile)));
+      csvWriter = new PrintWriter(new FileWriter(new File(csvFile + ".csv")));
       //creates the headings of the CSV
       csvWriter.write("Name, Location, Type" + System.getProperty("line.separator"));
       iterator = setOfMapPoints.iterator();
