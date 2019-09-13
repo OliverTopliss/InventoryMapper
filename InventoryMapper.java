@@ -81,7 +81,7 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     displayDataPanel.add(nameLabel);
     displayDataPanel.add(locationLabel);
     displayDataPanel.add(typeLabel);
-    
+
 
     //the button to open the map image file is stored in a flow layout
     fileChooserPanel.setLayout(new FlowLayout());
@@ -399,7 +399,6 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
       if (setOfMapPoints.isEmpty())
       {
         inputDetailsWindow.setVisible(true);
-        placeMapPoint(event.getX(), event.getY());
       }//if
       //if it is not the first, then it looks for another close point
       else
@@ -428,8 +427,6 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
           {
 
             inputDetailsWindow.setVisible(true);
-
-            placeMapPoint(event.getX(), event.getY());
 
           }//else if
         }// while
@@ -488,8 +485,8 @@ public class InventoryMapper extends JFrame implements ActionListener, MouseList
     return new ImageIcon(scaledImage);
   }//scaleImageIcon
 
-  //helper method which places a point on the map at the specific coordinates
-  private void placeMapPoint(int xCoordinate, int yCoordinate)
+  //method which places a point on the map at the specific coordinates
+  public void placeMapPoint(int xCoordinate, int yCoordinate)
   {
     //when the mouse is clicked on the image of the map, a new image is created and added to a label
     ImageIcon dotImage = new ImageIcon(fileLocationOfColourDot);

@@ -83,6 +83,7 @@ public class InputDetailsWindow extends JFrame implements ActionListener
       else
       {
         inventoryMapper.addMapPointToSetOfMapPoints(mapPoint);
+        inventoryMapper.placeMapPoint(xCoordinate, yCoordinate);
       }//else
       dispose();
     }//if
